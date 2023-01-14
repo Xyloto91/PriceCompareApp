@@ -12,10 +12,10 @@ namespace PriceCompareApp.Model
 
         public string Name { get; set; }
 
-        public bool HasData { get; set; }
-
         public string Price { get; set; }
 
         public bool Processed { get; set; }
+
+        public bool HasData => !string.IsNullOrEmpty(Name);
     }
 }

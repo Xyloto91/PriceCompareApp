@@ -106,6 +106,7 @@ namespace PriceCompareApp.Core
                 if (html != null)
                 {
                     htmlDocument.LoadHtml(html);
+                    item.Processed = true;
 
                     var productListUl = htmlDocument.DocumentNode
                         .Descendants("ul")
@@ -169,16 +170,6 @@ namespace PriceCompareApp.Core
 
                             if (rightBlock != null)
                             {
-                                item.Code = rightBlock
-                                    .Descendants("span")
-                                    .Where(
-                                        span =>
-                                            span.GetAttributeValue("class", "")
-                                                .Equals("sifra-za-porucivanje")
-                                    )
-                                    .FirstOrDefault()
-                                    ?.InnerText;
-
                                 item.Price = rightBlock
                                     .Descendants("span")
                                     .Where(

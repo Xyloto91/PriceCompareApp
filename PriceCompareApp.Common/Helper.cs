@@ -21,7 +21,9 @@ namespace PriceCompareApp.Common
             Dekom,
             Eltom,
             Elkond,
-            Loren
+            Loren,
+            Vrecool,
+            StatusFrigo
         }
 
         public static TimeSpan GetDefaultConnectionLossTimeout()

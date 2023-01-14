@@ -132,6 +132,7 @@ namespace PriceCompareApp.Core
                                     {
                                         Name = data.name,
                                         Code = data.cikkszam,
+                                        Processed = true,
                                         Price = !string.IsNullOrWhiteSpace(data.price_pdv)
                                             ? data.price_pdv.Replace(" ", "")
                                             : "-1"
@@ -141,6 +142,10 @@ namespace PriceCompareApp.Core
                         }
                         catch (Exception ex)
                         {
+                            Log.Error(
+                                ex,
+                                $"Exception occured on deserialization elkond data for item code: {itemCode}"
+                            );
                             return null;
                         }
                     }

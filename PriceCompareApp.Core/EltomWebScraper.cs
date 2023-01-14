@@ -107,6 +107,7 @@ namespace PriceCompareApp.Core
                 if (html != null)
                 {
                     htmlDocument.LoadHtml(html);
+                    item.Processed = true;
 
                     var productLinkDiv = htmlDocument.DocumentNode
                         .Descendants("div")
@@ -165,42 +166,36 @@ namespace PriceCompareApp.Core
                         {
                             html = await GetPageSourceFromSearchLinkAsync(link);
 
-                            htmlDocument = new HtmlDocument();
-
-                            htmlDocument.LoadHtml(html);
-
-                            var productInfo = htmlDocument.DocumentNode
-                                .Descendants("div")
-                                .Where(
-                                    div =>
-                                        div.GetAttributeValue("class", "")
-                                            .Equals("product-info pos")
-                                )
-                                .FirstOrDefault();
-
-                            if (productInfo != null)
+                            if (html != null)
                             {
-                                item.Name = Helper.DecodeText(
-                                    productInfo.Descendants("h2").FirstOrDefault()?.InnerText
-                                );
+                                htmlDocument.LoadHtml(html);
+                                item.Processed = true;
 
-                                item.Code = Helper
-                                    .DecodeText(
-                                        productInfo.Descendants("h4").FirstOrDefault()?.InnerText
-                                    )
-                                    .Replace("Šifra artikla", "")
-                                    .Replace(":", "")
-                                    .Replace(" ", "");
-
-                                item.Price = productInfo
-                                    .Descendants("p")
+                                var productInfo = htmlDocument.DocumentNode
+                                    .Descendants("div")
                                     .Where(
-                                        p =>
-                                            p.GetAttributeValue("class", "")
-                                                .Equals("discount-price")
+                                        div =>
+                                            div.GetAttributeValue("class", "")
+                                                .Equals("product-info pos")
                                     )
-                                    .FirstOrDefault()
-                                    ?.Attributes["content"].Value;
+                                    .FirstOrDefault();
+
+                                if (productInfo != null)
+                                {
+                                    item.Name = Helper.DecodeText(
+                                        productInfo.Descendants("h2").FirstOrDefault()?.InnerText
+                                    );
+
+                                    item.Price = productInfo
+                                        .Descendants("p")
+                                        .Where(
+                                            p =>
+                                                p.GetAttributeValue("class", "")
+                                                    .Equals("discount-price")
+                                        )
+                                        .FirstOrDefault()
+                                        ?.Attributes["content"].Value;
+                                }
                             }
                         }
                     }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PriceCompareApp.Core;
+using PriceCompareApp.Core.Scrapers;
 using Xunit;
 
 namespace PriceCompareApp.Test
@@ -15,10 +15,10 @@ namespace PriceCompareApp.Test
         {
             //Arrange
             var itemCodes = new List<string>() { "6941", "4648", "405", "5469" };
-            var sut = new EltomWebScraper(itemCodes); 
+            var sut = new EltomWebScraper(); 
 
             //Act
-            var result = await sut.RunScrapingAsync();
+            var result = await sut.RunScrapingAsync(itemCodes);
 
             //Assert
             Assert.NotNull(result);

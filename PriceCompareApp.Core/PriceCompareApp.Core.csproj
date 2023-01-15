@@ -50,13 +50,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DekomWebScraper.cs" />
-    <Compile Include="ElkondWebScraper.cs" />
-    <Compile Include="EltomWebScraper.cs" />
-    <Compile Include="LorenWebScraper.cs" />
+    <Compile Include="Scrapers\DekomWebScraper.cs" />
+    <Compile Include="Scrapers\ElkondWebScraper.cs" />
+    <Compile Include="Scrapers\EltomWebScraper.cs" />
+    <Compile Include="Factories\DekomWebScraperFactory.cs" />
+    <Compile Include="Factories\ElkondWebScraperFactory.cs" />
+    <Compile Include="Factories\EltomWebScraperFactory.cs" />
+    <Compile Include="Factories\LorenWebScraperFactory.cs" />
+    <Compile Include="Factories\StatusFrigoWebScraperFactory.cs" />
+    <Compile Include="Factories\VrecoolWebScraperFactory.cs" />
+    <Compile Include="Scrapers\LorenWebScraper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StatusFrigoWebScraper.cs" />
-    <Compile Include="VrecoolWebScraper.cs" />
+    <Compile Include="Scrapers\StatusFrigoWebScraper.cs" />
+    <Compile Include="Scrapers\VrecoolWebScraper.cs" />
+    <Compile Include="WebScraper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PriceCompareApp.Common\PriceCompareApp.Common.csproj">

@@ -14,26 +14,23 @@ using PriceCompareApp.Model;
 using Serilog;
 using static PriceCompareApp.Common.Helper;
 
-namespace PriceCompareApp.Core
+namespace PriceCompareApp.Core.Scrapers
 {
-    public class EltomWebScraper
+    public class EltomWebScraper : IWebScraper
     {
         private static HttpClient client;
-        public List<string> ItemCodes { get; set; }
-        public WebSite WebSite = WebSite.Eltom;
+        private readonly WebSite _webSite = WebSite.Eltom;
 
         public delegate void ScraperLogHandler(object sender, LogEventArgs e);
         public event ScraperLogHandler LogMessage;
 
-        public EltomWebScraper(List<string> itemCodes)
+        public EltomWebScraper()
         {
             client = new HttpClient(new HttpClientHandler() { Proxy = null });
             client.BaseAddress = new Uri("https://eltom.rs");
-
-            ItemCodes = itemCodes;
         }
 
-        public async Task<List<Item>> RunScrapingAsync()
+        public async Task<List<Item>> RunScrapingAsync(List<string> itemCodes)
         {
             ConcurrentBag<Item> itemsConcurrentBag = new ConcurrentBag<Item>();
             Stopwatch sw = new Stopwatch();
@@ -42,18 +39,18 @@ namespace PriceCompareApp.Core
             int maxSitePerIteration = 5;
             try
             {
-                OnLogMessage(new LogEventArgs($">>> Started scraping for {WebSite} site"));
+                OnLogMessage(new LogEventArgs($">>> Started scraping for {_webSite} site"));
 
                 sw.Start();
 
-                while (codesProcessed < ItemCodes.Count)
+                while (codesProcessed < itemCodes.Count)
                 {
                     int take =
-                        ItemCodes.Count - codesProcessed >= maxSitePerIteration
+                        itemCodes.Count - codesProcessed >= maxSitePerIteration
                             ? maxSitePerIteration
-                            : ItemCodes.Count % maxSitePerIteration;
+                            : itemCodes.Count % maxSitePerIteration;
 
-                    var t = ItemCodes
+                    var t = itemCodes
                         .Skip(codesProcessed)
                         .Take(take)
                         .Select(async itemCode =>
@@ -67,7 +64,7 @@ namespace PriceCompareApp.Core
 
                     OnLogMessage(
                         new LogEventArgs(
-                            $"    <<< Processed/total codes: {codesProcessed}/{ItemCodes.Count}"
+                            $"    <<< Processed/total codes: {codesProcessed}/{itemCodes.Count}"
                         )
                     );
                 }
@@ -79,7 +76,7 @@ namespace PriceCompareApp.Core
                         $"    Total scraping time: {sw.Elapsed.Hours}:{sw.Elapsed.Minutes}:{sw.Elapsed.Seconds}.{sw.Elapsed.Milliseconds}"
                     )
                 );
-                OnLogMessage(new LogEventArgs($"<<< Finished scraping for {WebSite} site"));
+                OnLogMessage(new LogEventArgs($"<<< Finished scraping for {_webSite} site"));
             }
             finally
             {

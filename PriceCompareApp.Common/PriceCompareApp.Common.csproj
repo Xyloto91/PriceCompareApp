@@ -45,5 +45,11 @@
     <Compile Include="Helper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PriceCompareApp.Model\PriceCompareApp.Model.csproj">
+      <Project>{8B8A1AA9-D8AF-489F-A4D9-7559F62DD7F8}</Project>
+      <Name>PriceCompareApp.Model</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

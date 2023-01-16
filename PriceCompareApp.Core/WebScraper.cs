@@ -10,7 +10,14 @@ namespace PriceCompareApp.Core
 {
     public class WebScraper
     {
+        private readonly WebScraperFactory _webScraperFactory;
+
+        public WebScraper()
+        {
+            _webScraperFactory = new WebScraperFactory();
+        }
+
         public async Task<List<Item>> Execute(WebSite webSite, List<string> itemCodes) =>
-            await new WebScraperFactory().Create(webSite).RunScrapingAsync(itemCodes);
+            await _webScraperFactory.Create(webSite).RunScrapingAsync(itemCodes);
     }
 }

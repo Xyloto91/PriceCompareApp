@@ -16,13 +16,10 @@ using static PriceCompareApp.Common.Helper;
 
 namespace PriceCompareApp.Core.Scrapers
 {
-    public class EltomWebScraper : IWebScraper
+    public class EltomWebScraper : WebScraperBase
     {
         private HttpClient client;
         private readonly WebSite _webSite = WebSite.Eltom;
-
-        public delegate void ScraperLogHandler(object sender, LogEventArgs e);
-        public event ScraperLogHandler LogMessage;
 
         public EltomWebScraper()
         {
@@ -30,7 +27,7 @@ namespace PriceCompareApp.Core.Scrapers
             client.BaseAddress = new Uri("https://eltom.rs");
         }
 
-        public async Task<List<Item>> RunScrapingAsync(List<string> itemCodes)
+        public override async Task<List<Item>> RunScrapingAsync(List<string> itemCodes)
         {
             ConcurrentBag<Item> itemsConcurrentBag = new ConcurrentBag<Item>();
             Stopwatch sw = new Stopwatch();
@@ -296,11 +293,6 @@ namespace PriceCompareApp.Core.Scrapers
             }
 
             return null;
-        }
-
-        protected virtual void OnLogMessage(LogEventArgs e)
-        {
-            LogMessage?.Invoke(this, e);
         }
     }
 }

@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.2.10.0\lib\net46\Serilog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -66,6 +69,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -84,6 +88,20 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Icons\price-tag.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PriceCompareApp.Common\PriceCompareApp.Common.csproj">
+      <Project>{25647CA2-724D-49CC-9C37-DD1BBA5975D2}</Project>
+      <Name>PriceCompareApp.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PriceCompareApp.Core\PriceCompareApp.Core.csproj">
+      <Project>{66F65CF2-CBA7-4FFF-8424-B0032419301D}</Project>
+      <Name>PriceCompareApp.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PriceCompareApp.Model\PriceCompareApp.Model.csproj">
+      <Project>{8B8A1AA9-D8AF-489F-A4D9-7559F62DD7F8}</Project>
+      <Name>PriceCompareApp.Model</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

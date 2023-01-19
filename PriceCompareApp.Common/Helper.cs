@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using ExcelDataReader;
+using PriceCompareApp.Model;
 
 namespace PriceCompareApp.Common
 {
@@ -24,6 +27,12 @@ namespace PriceCompareApp.Common
             Loren,
             Vrecool,
             StatusFrigo
+        }
+
+        public enum ExcelFileFormat
+        {
+            Xls,
+            Xlsx
         }
 
         public static TimeSpan GetDefaultConnectionLossTimeout()
@@ -112,5 +121,51 @@ namespace PriceCompareApp.Common
             return WebUtility.HtmlDecode(text);
         }
 
+        public static bool IsFileExistsOrNotEmpty(string filePath)
+        {
+            FileInfo fileInfo = new FileInfo(filePath);
+
+            if (fileInfo.Exists)
+                return fileInfo.Length > 0;
+            else
+                return false;
+        }
+
+        public static List<string> ReadCodesFromExcelFile(string filePath)
+        {
+            List<string> itemCodes = new List<string>();
+
+            using (FileStream fileStream = new FileStream(filePath, FileMode.Open))
+            using (IExcelDataReader excelDataReader = ExcelReaderFactory.CreateReader(fileStream, new ExcelReaderConfiguration { }))
+            {
+                if (excelDataReader.RowCount == 0)
+                    throw new Exception("Excel file is empty!");
+                else
+                {
+                    ExcelDataTableConfiguration excelConfig = new ExcelDataTableConfiguration { UseHeaderRow = false };
+
+                    using (DataSet ds = excelDataReader.AsDataSet(new ExcelDataSetConfiguration { ConfigureDataTable = (_) => excelConfig }))
+                    using (System.Data.DataTable dt = ds.Tables[0])
+                    {
+                        bool foundItemCodes = false;
+                        for (int i = 0; i < dt.Rows.Count; i++)
+                        {
+                            if (i != 0 && dt.Rows[i - 1][0].ToString().Trim().ToUpper() == "ŠIFRA")
+                                foundItemCodes = true;
+
+                            if (foundItemCodes)
+                            {
+                                if (!string.IsNullOrEmpty(dt.Rows[i][0].ToString().Trim()))
+                                    itemCodes.Add(dt.Rows[i][0].ToString().Trim());
+                                else
+                                    foundItemCodes = false;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return itemCodes;
+        }
     }
 }

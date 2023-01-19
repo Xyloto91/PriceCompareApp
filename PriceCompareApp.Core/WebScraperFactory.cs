@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text;
-using System.Threading.Tasks;
 using PriceCompareApp.Core.Scrapers;
 using PriceCompareApp.Model;
 using static PriceCompareApp.Common.Helper;
@@ -13,7 +7,7 @@ namespace PriceCompareApp.Core
 {
     public class WebScraperFactory
     {
-        public IWebScraper Create(WebSite website)
+        public WebScraperBase Create(WebSite website)
         {
             switch (website)
             {

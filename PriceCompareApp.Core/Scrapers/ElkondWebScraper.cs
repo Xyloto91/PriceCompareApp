@@ -17,13 +17,10 @@ using static PriceCompareApp.Common.Helper;
 
 namespace PriceCompareApp.Core.Scrapers
 {
-    public class ElkondWebScraper : IWebScraper
+    public class ElkondWebScraper : WebScraperBase
     {
         private HttpClient client;
         private readonly WebSite _webSite = WebSite.Elkond;
-
-        public delegate void ScraperLogHandler(object sender, LogEventArgs e);
-        public event ScraperLogHandler LogMessage;
 
         public ElkondWebScraper()
         {
@@ -33,7 +30,7 @@ namespace PriceCompareApp.Core.Scrapers
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("multipart/form-data"));
         }
 
-        public async Task<List<Item>> RunScrapingAsync(List<string> itemCodes)
+        public override async Task<List<Item>> RunScrapingAsync(List<string> itemCodes)
         {
             ConcurrentBag<Item> itemsConcurrentBag = new ConcurrentBag<Item>();
             Stopwatch sw = new Stopwatch();
@@ -164,11 +161,6 @@ namespace PriceCompareApp.Core.Scrapers
                 await Task.Delay(Helper.GetDefaultConnectionLossTimeout());
                 return await GetItemDataAsync(itemCode);
             }
-        }
-
-        protected virtual void OnLogMessage(LogEventArgs e)
-        {
-            LogMessage?.Invoke(this, e);
         }
     }
 }

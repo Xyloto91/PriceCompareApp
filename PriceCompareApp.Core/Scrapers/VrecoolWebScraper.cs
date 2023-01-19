@@ -15,13 +15,10 @@ using static PriceCompareApp.Common.Helper;
 
 namespace PriceCompareApp.Core.Scrapers
 {
-    public class VrecoolWebScraper : IWebScraper
+    public class VrecoolWebScraper : WebScraperBase //IWebScraper
     {
         private HttpClient client;
         private readonly WebSite _webSite = WebSite.Vrecool;
-
-        public delegate void ScraperLogHandler(object sender, LogEventArgs e);
-        public event ScraperLogHandler LogMessage;
 
         public VrecoolWebScraper()
         {
@@ -29,7 +26,7 @@ namespace PriceCompareApp.Core.Scrapers
             client.BaseAddress = new Uri("http://www.vrecool.com/");
         }
 
-        public async Task<List<Item>> RunScrapingAsync(List<string> itemCodes)
+        public override async Task<List<Item>> RunScrapingAsync(List<string> itemCodes)
         {
             ConcurrentBag<Item> itemsConcurrentBag = new ConcurrentBag<Item>();
             Stopwatch sw = new Stopwatch();
@@ -287,11 +284,6 @@ namespace PriceCompareApp.Core.Scrapers
             }
 
             return null;
-        }
-
-        protected virtual void OnLogMessage(LogEventArgs e)
-        {
-            LogMessage?.Invoke(this, e);
         }
     }
 }

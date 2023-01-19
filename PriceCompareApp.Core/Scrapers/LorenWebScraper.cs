@@ -16,13 +16,10 @@ using static PriceCompareApp.Common.Helper;
 
 namespace PriceCompareApp.Core.Scrapers
 {
-    public class LorenWebScraper : IWebScraper
+    public class LorenWebScraper : WebScraperBase
     {
         private HttpClient client;
         private readonly WebSite _webSite = WebSite.StatusFrigo;
-
-        public delegate void ScraperLogHandler(object sender, LogEventArgs e);
-        public event ScraperLogHandler LogMessage;
 
         public LorenWebScraper()
         {
@@ -30,7 +27,7 @@ namespace PriceCompareApp.Core.Scrapers
             client.BaseAddress = new Uri("http://www.loren.co.rs/");
         }
 
-        public async Task<List<Item>> RunScrapingAsync(List<string> itemCodes)
+        public override async Task<List<Item>> RunScrapingAsync(List<string> itemCodes)
         {
             ConcurrentBag<Item> itemsConcurrentBag = new ConcurrentBag<Item>();
             Stopwatch sw = new Stopwatch();
@@ -302,11 +299,6 @@ namespace PriceCompareApp.Core.Scrapers
             }
 
             return null;
-        }
-
-        protected virtual void OnLogMessage(LogEventArgs e)
-        {
-            LogMessage?.Invoke(this, e);
         }
     }
 }

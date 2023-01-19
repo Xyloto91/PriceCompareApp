@@ -18,7 +18,7 @@ namespace PriceCompareApp.Core.Scrapers
 {
     public class EltomWebScraper : IWebScraper
     {
-        private static HttpClient client;
+        private HttpClient client;
         private readonly WebSite _webSite = WebSite.Eltom;
 
         public delegate void ScraperLogHandler(object sender, LogEventArgs e);

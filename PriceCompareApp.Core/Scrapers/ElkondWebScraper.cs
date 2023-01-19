@@ -19,7 +19,7 @@ namespace PriceCompareApp.Core.Scrapers
 {
     public class ElkondWebScraper : IWebScraper
     {
-        private static HttpClient client;
+        private HttpClient client;
         private readonly WebSite _webSite = WebSite.Elkond;
 
         public delegate void ScraperLogHandler(object sender, LogEventArgs e);

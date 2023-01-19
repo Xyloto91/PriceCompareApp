@@ -17,7 +17,7 @@ namespace PriceCompareApp.Core.Scrapers
 {
     public class VrecoolWebScraper : IWebScraper
     {
-        private static HttpClient client;
+        private HttpClient client;
         private readonly WebSite _webSite = WebSite.Vrecool;
 
         public delegate void ScraperLogHandler(object sender, LogEventArgs e);

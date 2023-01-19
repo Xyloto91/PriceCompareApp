@@ -18,7 +18,7 @@ namespace PriceCompareApp.Core.Scrapers
 {
     public class LorenWebScraper : IWebScraper
     {
-        private static HttpClient client;
+        private HttpClient client;
         private readonly WebSite _webSite = WebSite.StatusFrigo;
 
         public delegate void ScraperLogHandler(object sender, LogEventArgs e);

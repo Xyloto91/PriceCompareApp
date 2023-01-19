@@ -17,7 +17,7 @@ namespace PriceCompareApp.Core.Scrapers
 {
     public class DekomWebScraper : IWebScraper
     {
-        private static HttpClient client;
+        private HttpClient client;
         private readonly WebSite _webSite = WebSite.Dekom;
 
         public delegate void ScraperLogHandler(object sender, LogEventArgs e);

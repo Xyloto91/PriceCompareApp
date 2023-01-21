@@ -9,141 +9,143 @@ namespace PriceCompareApp.Common
 {
     public static class Configuration
     {
+        private static string _connectionLossTimeout;
         public static string ConnectionLossTimeout
         {
             get
             {
-                string timeout = "00:02:00";
-                if (Helper.GetValueFromIniFile("ConnectionLossTimeout") != null)
-                    timeout = Helper.GetValueFromIniFile("ConnectionLossTimeout").ToString();
-                return timeout;
+                _connectionLossTimeout = "00:02:00";
+                if (!string.IsNullOrWhiteSpace(Helper.GetValueFromIniFile("ConnectionLossTimeout").ToString()))
+                    _connectionLossTimeout = Helper.GetValueFromIniFile("ConnectionLossTimeout").ToString();
+                return _connectionLossTimeout;
             }
             set
             {
-                ConnectionLossTimeout= value;
+                _connectionLossTimeout = value;
             }
         }
 
+        private static string _vrecoolDefaultPath;
         public static string VrecoolDefaultPath
         {
             get 
             {
-                string filePath = "";
-                if (Helper.GetValueFromIniFile("VrecoolDefaultPath") != null)
-                    filePath = Helper.GetValueFromIniFile("VrecoolDefaultPath").ToString();
-                return filePath;
+                if (!string.IsNullOrWhiteSpace(Helper.GetValueFromIniFile("VrecoolDefaultPath").ToString()))
+                    _vrecoolDefaultPath = Helper.GetValueFromIniFile("VrecoolDefaultPath").ToString();
+                return _vrecoolDefaultPath;
             }
             set
             {
-                VrecoolDefaultPath = value;
+                _vrecoolDefaultPath = value;
             }
         }
 
+        private static string _lorenDefaultPath;
         public static string LorenDefaultPath
         {
             get
             {
-                string filePath = "";
-                if (Helper.GetValueFromIniFile("LorenDefaultPath") != null)
-                    filePath = Helper.GetValueFromIniFile("LorenDefaultPath").ToString();
-                return filePath;
+                if (!string.IsNullOrWhiteSpace(Helper.GetValueFromIniFile("LorenDefaultPath").ToString()))
+                    _lorenDefaultPath = Helper.GetValueFromIniFile("LorenDefaultPath").ToString();
+                return _lorenDefaultPath;
             }
             set
             {
-                LorenDefaultPath = value;
+                _lorenDefaultPath = value;
             }
         }
 
+        private static string _dekomDefaultPath;
         public static string DekomDefaultPath
         {
             get
             {
-                string filePath = "";
-                if (Helper.GetValueFromIniFile("DekomDefaultPath") != null)
-                    filePath = Helper.GetValueFromIniFile("DekomDefaultPath").ToString();
-                return filePath;
+                if (!string.IsNullOrWhiteSpace(Helper.GetValueFromIniFile("DekomDefaultPath").ToString()))
+                    _dekomDefaultPath = Helper.GetValueFromIniFile("DekomDefaultPath").ToString();
+                return _dekomDefaultPath;
             }
             set
             {
-                DekomDefaultPath = value;
+                _dekomDefaultPath = value;
             }
         }
 
+        private static string _eltomDefaultPath;
         public static string EltomDefaultPath
         {
             get
             {
-                string filePath = "";
-                if (Helper.GetValueFromIniFile("EltomDefaultPath") != null)
-                    filePath = Helper.GetValueFromIniFile("EltomDefaultPath").ToString();
-                return filePath;
+                if (!string.IsNullOrWhiteSpace(Helper.GetValueFromIniFile("EltomDefaultPath").ToString()))
+                    _eltomDefaultPath = Helper.GetValueFromIniFile("EltomDefaultPath").ToString();
+                return _eltomDefaultPath;
             }
             set
             {
-                EltomDefaultPath = value;
+                _eltomDefaultPath = value;
             }
         }
 
+        private static string _elkondDefaultPath;
         public static string ElkondDefaultPath
         {
             get
             {
-                string filePath = "";
-                if (Helper.GetValueFromIniFile("ElkondDefaultPath") != null)
-                    filePath = Helper.GetValueFromIniFile("ElkondDefaultPath").ToString();
-                return filePath;
+                if (!string.IsNullOrWhiteSpace(Helper.GetValueFromIniFile("ElkondDefaultPath").ToString()))
+                    _elkondDefaultPath = Helper.GetValueFromIniFile("ElkondDefaultPath").ToString();
+                return _elkondDefaultPath;
             }
             set
             {
-                ElkondDefaultPath = value;
+                _elkondDefaultPath = value;
             }
         }
 
+        private static string _statusFrigoDefaultPath;
         public static string StatusFrigoDefaultPath
         {
             get
             {
-                string filePath = "";
-                if (Helper.GetValueFromIniFile("StatusFrigoDefaultPath") != null)
-                    filePath = Helper.GetValueFromIniFile("StatusFrigoDefaultPath").ToString();
-                return filePath;
+                if (!string.IsNullOrWhiteSpace(Helper.GetValueFromIniFile("StatusFrigoDefaultPath").ToString()))
+                    _statusFrigoDefaultPath = Helper.GetValueFromIniFile("StatusFrigoDefaultPath").ToString();
+                return _statusFrigoDefaultPath;
             }
             set
             {
-                StatusFrigoDefaultPath = value;
+                _statusFrigoDefaultPath = value;
             }
         }
 
+        private static string _stelaxDefaultPath;
         public static string StelaxDefaultPath
         {
             get
             {
-                string filePath = "";
-                if (Helper.GetValueFromIniFile("StelaxDefaultPath") != null)
-                    filePath = Helper.GetValueFromIniFile("StelaxDefaultPath").ToString();
-                return filePath;
+                if (!string.IsNullOrWhiteSpace(Helper.GetValueFromIniFile("StelaxDefaultPath").ToString()))
+                    _stelaxDefaultPath = Helper.GetValueFromIniFile("StelaxDefaultPath").ToString();
+                return _stelaxDefaultPath;
             }
             set
             {
-                StelaxDefaultPath = value;
+                _stelaxDefaultPath = value;
             }
         }
 
+        private static string _outputDefaultDirectoryPath;
         public static string OutputDefaultDirectoryPath
         {
             get
             {
-                string path = "";
-                if (Helper.GetValueFromIniFile("OutputDefaultDirectoryPath") != null)
-                    path = Helper.GetValueFromIniFile("OutputDefaultDirectoryPath").ToString();
-                return path;
+                if (!string.IsNullOrWhiteSpace(Helper.GetValueFromIniFile("OutputDefaultDirectoryPath").ToString()))
+                    _outputDefaultDirectoryPath = Helper.GetValueFromIniFile("OutputDefaultDirectoryPath").ToString();
+                return _outputDefaultDirectoryPath;
             }
             set
             {
-                OutputDefaultDirectoryPath = value;
+                _outputDefaultDirectoryPath = value;
             }
         }
 
+        private static Helper.ExcelFileFormat _fileFormat;
         public static Helper.ExcelFileFormat FileFormat
         {
             get
@@ -155,11 +157,11 @@ namespace PriceCompareApp.Common
                     return (Helper.ExcelFileFormat)enumVal;
                 }
 
-                return Helper.ExcelFileFormat.Xls;
+                return _fileFormat;
             }
             set
             {
-                FileFormat = value;
+                _fileFormat = value;
             }
         }
 

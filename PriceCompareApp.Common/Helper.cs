@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 using ExcelDataReader;
+using NPOI.HSSF.UserModel;
+using NPOI.SS.Formula.Functions;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 using PriceCompareApp.Model;
+using static PriceCompareApp.Common.Helper;
 
 namespace PriceCompareApp.Common
 {
@@ -116,6 +121,21 @@ namespace PriceCompareApp.Common
             }
         }
 
+        public static void DeleteOlderLogFiles(int days = 3)
+        {
+            try
+            {
+                Directory.GetFiles(LogDirectoryPath, "*.json")
+                                 .Select(f => new FileInfo(f))
+                                 .Where(f => f.CreationTime < DateTime.Now.AddDays(-days))
+                                 .ToList()
+                                 .ForEach(f => f.Delete());
+            }
+            catch (Exception)
+            {
+            }
+        }
+
         public static string DecodeText(string text)
         {
             return WebUtility.HtmlDecode(text);
@@ -166,6 +186,184 @@ namespace PriceCompareApp.Common
             }
 
             return itemCodes;
+        }
+
+        public static List<Item> ReadItemDataFromExcel(string filePath)
+        {
+            List<Item> itemCodes = new List<Item>();
+
+            using (FileStream fileStream = new FileStream(filePath, FileMode.Open))
+            using (IExcelDataReader excelDataReader = ExcelReaderFactory.CreateReader(fileStream, new ExcelReaderConfiguration { }))
+            {
+                if (excelDataReader.RowCount == 0)
+                    throw new Exception("Excel file is empty!");
+                else
+                {
+                    ExcelDataTableConfiguration excelConfig = new ExcelDataTableConfiguration { UseHeaderRow = false };
+
+                    using (DataSet ds = excelDataReader.AsDataSet(new ExcelDataSetConfiguration { ConfigureDataTable = (_) => excelConfig }))
+                    using (DataTable dt = ds.Tables[0])
+                    {
+                        bool foundItemCodes = false;
+                        for (int i = 0; i < dt.Rows.Count; i++)
+                        {
+                            if (i != 0 && dt.Rows[i - 1][0].ToString().Trim().ToUpper() == "ŠIFRA")
+                                foundItemCodes = true;
+
+                            if (foundItemCodes)
+                            {
+                                if (!string.IsNullOrEmpty(dt.Rows[i][0].ToString().Trim()))
+                                    itemCodes.Add( 
+                                        new Item
+                                        {
+                                            Code = dt.Rows[i][0].ToString().Trim(),
+                                            Name = dt.Rows[i][1].ToString().Trim(),
+                                            Price = dt.Rows[i][4].ToString().Trim()
+                                        }
+                                    );
+                                else
+                                    foundItemCodes = false;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return itemCodes;
+        }
+
+        public static void CreateExcelFileWithPrice(List<Item> sourceItemData, Dictionary<WebSite, List<Item>> itemDataByWebSite, string directory, string fileName, ExcelFileFormat excelFileFormat = ExcelFileFormat.Xls)
+        {
+            try
+            {
+                using (var fs = new FileStream(Path.Combine(directory, $"{fileName}.{(excelFileFormat == ExcelFileFormat.Xls ? "xls" : "xlsx")}"), FileMode.Create, FileAccess.Write))
+                {
+                    IWorkbook workbook;
+
+                    if (excelFileFormat == ExcelFileFormat.Xls)
+                        workbook = new HSSFWorkbook();
+                    else
+                        workbook = new XSSFWorkbook();
+
+                    ISheet excelSheet = workbook.CreateSheet("Cene artikala");
+
+                    ICellStyle codeCellStyle = workbook.CreateCellStyle();
+                    ICellStyle nameCellStyle = workbook.CreateCellStyle();
+                    ICellStyle priceCellStyle = workbook.CreateCellStyle();
+
+                    excelSheet.SetColumnWidth(0, 15 * 256);
+                    excelSheet.SetColumnWidth(1, 55 * 256);
+                    excelSheet.SetColumnWidth(2, 12 * 256);
+                    excelSheet.SetColumnWidth(3, 12 * 256);
+                    excelSheet.SetColumnWidth(4, 12 * 256);
+                    excelSheet.SetColumnWidth(5, 12 * 256);
+                    excelSheet.SetColumnWidth(6, 12 * 256);
+                    excelSheet.SetColumnWidth(7, 12 * 256);
+
+                    List<string> columns = new List<string>() { "Šifra proizvoda", "Naziv proizvoda", "Cena", "Dekom", "Elkond", "Eltom", "Loren", "Status frigo", "Vrecool" };
+                    IRow row = excelSheet.CreateRow(0);
+
+                    foreach (var columnData in columns.Select((v, i) => new { Column = v, Index = i }).ToList())
+                        row.CreateCell(columnData.Index).SetCellValue(columnData.Column);
+
+                    codeCellStyle.DataFormat = workbook.CreateDataFormat().GetFormat("@");
+                    nameCellStyle.DataFormat = workbook.CreateDataFormat().GetFormat("@");
+                    priceCellStyle.DataFormat = workbook.CreateDataFormat().GetFormat("#,#0.00");
+
+                    int rowIndex = 1;
+
+                    foreach (var item in sourceItemData)
+                    {
+                        row = excelSheet.CreateRow(rowIndex);
+                        row.CreateCell(0).SetCellValue(item.Code);
+                        row.Cells[0].CellStyle = codeCellStyle;
+                        row.CreateCell(1).SetCellValue(item.Name);
+                        row.Cells[1].CellStyle = codeCellStyle;
+
+                        ICell priceCell = row.CreateCell(2);
+                        priceCell.CellStyle = priceCellStyle;
+
+                        priceCell.SetCellValue(double.Parse(item.Price));
+                        priceCell.SetCellType(CellType.Numeric);
+
+                        foreach (var webSite in itemDataByWebSite)
+                        {
+                            InsertWebSiteDataInCoulumn(
+                                webSite: webSite.Key, 
+                                webSiteData: webSite.Value[rowIndex - 1], 
+                                row: row, 
+                                cellStyle: priceCellStyle);
+                        }
+
+                        rowIndex++;
+                    }
+
+                    workbook.Write(fs);
+                    fs.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                if (Debugger.IsAttached) Debugger.Break();
+                Serilog.Log.Error(ex, "Exception occured while creating excel file!");
+                throw ex;
+            }
+        }
+
+        private static void InsertWebSiteDataInCoulumn(WebSite webSite, Item webSiteData, IRow row, ICellStyle cellStyle)
+        {
+            switch (webSite)
+            {
+                case WebSite.Dekom:
+                    InsertPriceDataInColumn(row, 3, webSiteData, cellStyle);
+                    break;
+
+                case WebSite.Elkond:
+                    InsertPriceDataInColumn(row, 4, webSiteData, cellStyle);
+                    break;
+
+                case WebSite.Eltom:
+                    InsertPriceDataInColumn(row, 5, webSiteData, cellStyle);
+                    break;
+
+                case WebSite.Loren:
+                    InsertPriceDataInColumn(row, 6, webSiteData, cellStyle);
+                    break;
+
+                case WebSite.StatusFrigo:
+                    InsertPriceDataInColumn(row, 7, webSiteData, cellStyle);
+                    break;
+
+                case WebSite.Vrecool:
+                    InsertPriceDataInColumn(row, 8, webSiteData, cellStyle);
+                    break;
+
+                default:
+                    throw new NotImplementedException($"Not implemented for website {webSite}!");
+            }
+        }
+
+        private static void InsertPriceDataInColumn(IRow row, int column, Item item, ICellStyle priceCellStyle)
+        {
+            ICell priceCell = row.CreateCell(column);
+            priceCell.CellStyle = priceCellStyle;
+
+            if (item.HasData)
+            {
+                if (item.Price == "NA UPIT")
+                {
+                    row.CreateCell(3).SetCellValue(item.Price);
+                }
+                else
+                {
+                    priceCell.SetCellValue(double.Parse(item.Price));
+                    priceCell.SetCellType(CellType.Numeric);
+                }
+            }
+            else
+            {
+                row.CreateCell(3).SetCellValue("");
+            }
         }
     }
 }

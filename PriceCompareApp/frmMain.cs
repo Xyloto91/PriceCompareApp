@@ -14,6 +14,7 @@ using PriceCompareApp.Common;
 using PriceCompareApp.Core;
 using PriceCompareApp.Model;
 using Serilog;
+using Serilog.Formatting.Compact;
 using static PriceCompareApp.Common.Helper;
 
 namespace PriceCompareApp.UI
@@ -84,7 +85,17 @@ namespace PriceCompareApp.UI
 
         private void frmMain_Load(object sender, EventArgs e)
         {
+            string logDirectoryPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                "PriceCompareAppLogs"
+            );
+            string iniFilePath = Path.Combine(logDirectoryPath, "PriceCompareAppConfiguration.ini");
+
             LoadIcons();
+            ConfigureLogger();
+            CreateIniFileIfDoesntExists(iniFilePath);
+            LoadDefaultValues();
+            WriteDefaultConnectionLossTimeout();
         }
 
         private async void btnRunWebScrapingProcess_Click(object sender, EventArgs e)
@@ -178,17 +189,6 @@ namespace PriceCompareApp.UI
                 return;
             }
 
-            if (
-                MessageBox.Show(
-                    $"Do you want to start scraping with following price percentage per sites?",
-                    "Information",
-                    MessageBoxButtons.YesNo
-                ) == DialogResult.No
-            )
-            {
-                return;
-            }
-
             try
             {
                 List<string> vrecoolItemCodes;
@@ -197,7 +197,6 @@ namespace PriceCompareApp.UI
                 List<string> eltomItemCodes;
                 List<string> elkondItemCodes;
                 List<string> statusFrigoItemCodes;
-                List<string> stelaxItemCodes;
 
                 List<Item> vrecoolItemData;
                 List<Item> lorenItemData;
@@ -218,6 +217,7 @@ namespace PriceCompareApp.UI
 
                 SetText("> Scraping operation started");
 
+                var scrapedDataByWebSite = new Dictionary<WebSite, List<Item>>();
                 var webScraper = new WebScraper(LogMessage);
 
                 if (VrecoolChecked)
@@ -226,7 +226,11 @@ namespace PriceCompareApp.UI
 
                     if (vrecoolItemCodes?.Count > 0)
                     {
-                        vrecoolItemData = await webScraper.Execute(WebSite.Vrecool, vrecoolItemCodes);
+                        vrecoolItemData = await webScraper.Execute(
+                            WebSite.Vrecool,
+                            vrecoolItemCodes
+                        );
+                        scrapedDataByWebSite.Add(WebSite.Vrecool, vrecoolItemData);
 
                         if (LorenChecked)
                             SetText("");
@@ -240,6 +244,7 @@ namespace PriceCompareApp.UI
                     if (lorenItemCodes?.Count > 0)
                     {
                         lorenItemData = await webScraper.Execute(WebSite.Loren, lorenItemCodes);
+                        scrapedDataByWebSite.Add(WebSite.Loren, lorenItemData);
 
                         if (DekomChecked)
                             SetText("");
@@ -253,6 +258,7 @@ namespace PriceCompareApp.UI
                     if (dekomItemCodes?.Count > 0)
                     {
                         dekomItemData = await webScraper.Execute(WebSite.Dekom, dekomItemCodes);
+                        scrapedDataByWebSite.Add(WebSite.Dekom, dekomItemData);
 
                         if (ElkondChecked)
                             SetText("");
@@ -265,7 +271,8 @@ namespace PriceCompareApp.UI
 
                     if (elkondItemCodes?.Count > 0)
                     {
-                        elkondItemData = await webScraper.Execute(WebSite.Dekom, elkondItemCodes);
+                        elkondItemData = await webScraper.Execute(WebSite.Elkond, elkondItemCodes);
+                        scrapedDataByWebSite.Add(WebSite.Elkond, elkondItemData);
 
                         if (EltomChecked)
                             SetText("");
@@ -276,9 +283,10 @@ namespace PriceCompareApp.UI
                 {
                     eltomItemCodes = ReadCodesFromExcelFile(EltomFilePath);
 
-                    if(eltomItemCodes?.Count > 0)
+                    if (eltomItemCodes?.Count > 0)
                     {
-                        eltomItemData = await webScraper.Execute(WebSite.Dekom, eltomItemCodes);
+                        eltomItemData = await webScraper.Execute(WebSite.Eltom, eltomItemCodes);
+                        scrapedDataByWebSite.Add(WebSite.Eltom, eltomItemData);
 
                         if (StatusFrigoChecked)
                             SetText("");
@@ -291,12 +299,28 @@ namespace PriceCompareApp.UI
 
                     if (statusFrigoItemCodes?.Count > 0)
                     {
-                        statusFrigoItemData = await webScraper.Execute(WebSite.Dekom, statusFrigoItemCodes);
+                        statusFrigoItemData = await webScraper.Execute(
+                            WebSite.StatusFrigo,
+                            statusFrigoItemCodes
+                        );
+                        scrapedDataByWebSite.Add(WebSite.StatusFrigo, statusFrigoItemData);
                     }
                 }
 
-                stelaxItemCodes = ReadCodesFromExcelFile(StelaxFilePath);
-                stelaxItemData = stelaxItemCodes.Select(x => new Item { Code = x }).ToList();
+                stelaxItemData = ReadItemDataFromExcel(StelaxFilePath);
+
+                string fileName = $"Cene artikala";
+                string destinationFolder = !string.IsNullOrEmpty(txtOutputDirectoryPath.Text.Trim())
+                    ? txtOutputDirectoryPath.Text.Trim()
+                    : Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+                CreateExcelFileWithPrice(
+                    sourceItemData: stelaxItemData,
+                    itemDataByWebSite: scrapedDataByWebSite,
+                    directory: destinationFolder,
+                    fileName: fileName,
+                    excelFileFormat: Configuration.FileFormat
+                );
 
                 SetText("< Scraping operation finished");
                 btnRunWebScrapingProcess.Enabled = true;
@@ -516,26 +540,17 @@ namespace PriceCompareApp.UI
 
         private void btnOutputDirectory_Click(object sender, EventArgs e)
         {
-            using (OpenFileDialog fileDialog = new OpenFileDialog())
+            using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
             {
-                fileDialog.Filter = "Excel Files (*.xls,*.xlsx)|*.xls;*.xlsx|All Files (*.*)|*.*";
-                if (fileDialog.ShowDialog() == DialogResult.OK)
+                if (folderDialog.ShowDialog() == DialogResult.OK)
                 {
-                    txtOutputDirectoryPath.Text = fileDialog.FileName;
+                    txtOutputDirectoryPath.Text = folderDialog.SelectedPath.Trim();
 
                     if (!string.IsNullOrEmpty(txtOutputDirectoryPath.Text.Trim()))
                     {
-                        if (
-                            MessageBox.Show(
-                                "Would you like to set choosen path as default path?",
-                                "Default path",
-                                MessageBoxButtons.YesNo,
-                                MessageBoxIcon.Question
-                            ) == DialogResult.Yes
-                        )
+                        if (MessageBox.Show("Would you like to set choosen path as default path?", "Default path", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                         {
-                            Configuration.OutputDefaultDirectoryPath =
-                                txtOutputDirectoryPath.Text.Trim();
+                            Configuration.OutputDefaultDirectoryPath = txtOutputDirectoryPath.Text.Trim();
                             Configuration.SaveSettings();
                         }
                     }
@@ -568,6 +583,45 @@ namespace PriceCompareApp.UI
         private void LogMessage(object sender, LogEventArgs e)
         {
             SetText(e.Message);
+            Log.Information(e.Message);
+        }
+
+        private void ConfigureLogger()
+        {
+            Helper.DeleteOlderLogFiles(days: 3);
+
+            Log.Logger = new LoggerConfiguration().MinimumLevel
+                .Debug()
+                .WriteTo.Logger(
+                    l =>
+                        l.WriteTo
+                            .File(
+                                new CustomCompactJsonFormatter(),
+                                $"{Helper.LogDirectoryPath}/PriceCompareAppLog_{DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss")}.json"
+                            )
+                            .Filter.ByExcluding(
+                                le => le.Level == Serilog.Events.LogEventLevel.Debug
+                            )
+                            
+                )
+                .CreateLogger();
+        }
+
+        private void LoadDefaultValues()
+        {
+            txtVrecoolFilePath.Text = Configuration.VrecoolDefaultPath;
+            txtLorenFilePath.Text = Configuration.LorenDefaultPath;
+            txtDekomFilePath.Text = Configuration.DekomDefaultPath;
+            txtElkondFilePath.Text = Configuration.ElkondDefaultPath;
+            txtEltomFilePath.Text = Configuration.EltomDefaultPath;
+            txtStatusFrigoFilePath.Text = Configuration.StatusFrigoDefaultPath;
+            txtStelaxFilePath.Text = Configuration.StelaxDefaultPath;
+            txtOutputDirectoryPath.Text = Configuration.OutputDefaultDirectoryPath;
+        }
+
+        private void WriteDefaultConnectionLossTimeout()
+        {
+            Configuration.ConnectionLossTimeout = "00:01:00";
         }
     }
 }

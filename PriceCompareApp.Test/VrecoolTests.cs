@@ -16,7 +16,7 @@ namespace PriceCompareApp.Test
         {
             //Arrange
             var itemCodes = new List<string>() { "8040", "8001", "8071", "4583" };
-            var sut = new VrecoolWebScraper();
+            var sut = new VrecoolWebScraper(null);
 
             //Act
             var result = await sut.RunScrapingAsync(itemCodes);

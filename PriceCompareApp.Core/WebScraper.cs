@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using PriceCompareApp.Model;
@@ -12,19 +14,17 @@ namespace PriceCompareApp.Core
     public class WebScraper
     {
         private readonly WebScraperFactory _webScraperFactory;
-        public event ScraperLogHandler WebScraperLogHandler;
+        private readonly Action<string> _logger;
 
-        public WebScraper(ScraperLogHandler scraperLogHandler)
+        private WebScraper(Action<string> logger)
         {
             _webScraperFactory = new WebScraperFactory();
-            WebScraperLogHandler = scraperLogHandler;
+            _logger = logger;
         }
 
-        public async Task<List<Item>> Execute(WebSite webSite, List<string> itemCodes)
-        {
-            var webScraper = _webScraperFactory.Create(webSite);
-            webScraper.LogMessage += WebScraperLogHandler;
-            return await webScraper.RunScrapingAsync(itemCodes);
-        }
+        public static WebScraper InitializeWebScraper(Action<string> logger) => new WebScraper(logger);
+
+        public async Task<List<Item>> Execute(WebSite webSite, List<string> itemCodes) =>
+            await _webScraperFactory.Create(webSite, _logger).RunScrapingAsync(itemCodes);
     }
 }

@@ -18,10 +18,12 @@ namespace PriceCompareApp.Core.Scrapers
     public class StatusFrigoWebScraper : WebScraperBase
     {
         private HttpClient client;
-        private readonly WebSite _webSite = WebSite.Vrecool;
+        private readonly WebSite _webSite = WebSite.StatusFrigo;
+        private readonly Action<string> _logger;
 
-        public StatusFrigoWebScraper()
+        public StatusFrigoWebScraper(Action<string> logger)
         {
+            _logger = logger;
             client = new HttpClient(new HttpClientHandler { Proxy = null });
             client.BaseAddress = new Uri("https://status-frigo.com/");
         }
@@ -35,7 +37,7 @@ namespace PriceCompareApp.Core.Scrapers
             int maxSitePerIteration = 5;
             try
             {
-                OnLogMessage(new LogEventArgs($">>> Started scraping for {_webSite} site"));
+                _logger?.Invoke($">>> Started scraping for {_webSite} site");
 
                 sw.Start();
 
@@ -58,21 +60,17 @@ namespace PriceCompareApp.Core.Scrapers
 
                     codesProcessed += take;
 
-                    OnLogMessage(
-                        new LogEventArgs(
-                            $"    <<< Processed/total codes: {codesProcessed}/{itemCodes.Count}"
-                        )
+                    _logger?.Invoke(
+                        $"    <<< Processed/total codes: {codesProcessed}/{itemCodes.Count}"
                     );
                 }
 
                 sw.Stop();
 
-                OnLogMessage(
-                    new LogEventArgs(
-                        $"    Total scraping time: {sw.Elapsed.Hours}:{sw.Elapsed.Minutes}:{sw.Elapsed.Seconds}.{sw.Elapsed.Milliseconds}"
-                    )
+                _logger?.Invoke(
+                    $"    Total scraping time: {sw.Elapsed.Hours}:{sw.Elapsed.Minutes}:{sw.Elapsed.Seconds}.{sw.Elapsed.Milliseconds}"
                 );
-                OnLogMessage(new LogEventArgs($"<<< Finished scraping for {_webSite} site"));
+                _logger?.Invoke($"<<< Finished scraping for {_webSite} site");
             }
             finally
             {

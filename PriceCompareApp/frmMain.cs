@@ -211,14 +211,14 @@ namespace PriceCompareApp.UI
                 txtLog.Clear();
                 btnRunWebScrapingProcess.Enabled = false;
 
-                SetText(
+                LogMessage(
                     $"Default connection loss timeout: {GetDefaultConnectionLossTimeout().ToString().Trim()}"
                 );
 
-                SetText("> Scraping operation started");
+                LogMessage("> Scraping operation started");
 
                 var scrapedDataByWebSite = new Dictionary<WebSite, List<Item>>();
-                var webScraper = new WebScraper(LogMessage);
+                var webScraper = WebScraper.InitializeWebScraper(LogMessage);
 
                 if (VrecoolChecked)
                 {
@@ -233,7 +233,7 @@ namespace PriceCompareApp.UI
                         scrapedDataByWebSite.Add(WebSite.Vrecool, vrecoolItemData);
 
                         if (LorenChecked)
-                            SetText("");
+                            LogMessage("");
                     }
                 }
 
@@ -247,7 +247,7 @@ namespace PriceCompareApp.UI
                         scrapedDataByWebSite.Add(WebSite.Loren, lorenItemData);
 
                         if (DekomChecked)
-                            SetText("");
+                            LogMessage("");
                     }
                 }
 
@@ -261,7 +261,7 @@ namespace PriceCompareApp.UI
                         scrapedDataByWebSite.Add(WebSite.Dekom, dekomItemData);
 
                         if (ElkondChecked)
-                            SetText("");
+                            LogMessage("");
                     }
                 }
 
@@ -275,7 +275,7 @@ namespace PriceCompareApp.UI
                         scrapedDataByWebSite.Add(WebSite.Elkond, elkondItemData);
 
                         if (EltomChecked)
-                            SetText("");
+                            LogMessage("");
                     }
                 }
 
@@ -289,7 +289,7 @@ namespace PriceCompareApp.UI
                         scrapedDataByWebSite.Add(WebSite.Eltom, eltomItemData);
 
                         if (StatusFrigoChecked)
-                            SetText("");
+                            LogMessage("");
                     }
                 }
 
@@ -322,7 +322,7 @@ namespace PriceCompareApp.UI
                     excelFileFormat: Configuration.FileFormat
                 );
 
-                SetText("< Scraping operation finished");
+                LogMessage("< Scraping operation finished");
                 btnRunWebScrapingProcess.Enabled = true;
             }
             catch (Exception ex)
@@ -558,13 +558,14 @@ namespace PriceCompareApp.UI
             }
         }
 
-        private void SetText(string text)
+        private void LogMessage(string text)
         {
             if (text != null)
             {
+                Log.Information(text);
                 if (this.txtLog.InvokeRequired)
                 {
-                    SetOutputTextCallback d = new SetOutputTextCallback(SetText);
+                    SetOutputTextCallback d = new SetOutputTextCallback(LogMessage);
                     try
                     {
                         this.Invoke(d, new object[] { text });
@@ -578,12 +579,6 @@ namespace PriceCompareApp.UI
                     this.txtLog.Refresh();
                 }
             }
-        }
-
-        private void LogMessage(object sender, LogEventArgs e)
-        {
-            SetText(e.Message);
-            Log.Information(e.Message);
         }
 
         private void ConfigureLogger()

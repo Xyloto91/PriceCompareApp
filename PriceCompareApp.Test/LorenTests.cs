@@ -15,7 +15,7 @@ namespace PriceCompareApp.Test
         {
             //Arrange
             var itemCodes = new List<string>() { "328AD006", "339UN065" };
-            var sut = new LorenWebScraper();
+            var sut = new LorenWebScraper(null);
 
             //Act
             var result = await sut.RunScrapingAsync(itemCodes);

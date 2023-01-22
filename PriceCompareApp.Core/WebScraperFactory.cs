@@ -7,22 +7,22 @@ namespace PriceCompareApp.Core
 {
     public class WebScraperFactory
     {
-        public WebScraperBase Create(WebSite website)
+        public WebScraperBase Create(WebSite website, Action<string> logger)
         {
             switch (website)
             {
                 case WebSite.Dekom:
-                    return new DekomWebScraper();
+                    return new DekomWebScraper(logger);
                 case WebSite.Eltom:
-                    return new EltomWebScraper();
+                    return new EltomWebScraper(logger);
                 case WebSite.Elkond:
-                    return new ElkondWebScraper();
+                    return new ElkondWebScraper(logger);
                 case WebSite.Loren:
-                    return new LorenWebScraper();
+                    return new LorenWebScraper(logger);
                 case WebSite.Vrecool:
-                    return new VrecoolWebScraper();
+                    return new VrecoolWebScraper(logger);
                 case WebSite.StatusFrigo:
-                    return new StatusFrigoWebScraper();
+                    return new StatusFrigoWebScraper(logger);
                 default:
                     throw new NotImplementedException();
             }

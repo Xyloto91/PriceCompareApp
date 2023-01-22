@@ -15,7 +15,7 @@ namespace PriceCompareApp.Test
         {
             //Arrange
             var itemCodes = new List<string>() { "6941", "4648", "405", "5469" };
-            var sut = new EltomWebScraper(); 
+            var sut = new EltomWebScraper(null); 
 
             //Act
             var result = await sut.RunScrapingAsync(itemCodes);

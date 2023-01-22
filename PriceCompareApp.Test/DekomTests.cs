@@ -16,7 +16,7 @@ namespace PriceCompareApp.Test
         {
             //Arrange
             var itemCodes = new List<string>() { "310120", "450040", "196380", "221160" };
-            var sut = new DekomWebScraper();
+            var sut = new DekomWebScraper(null);
 
             //Act
             var result = await sut.RunScrapingAsync(itemCodes);

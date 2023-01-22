@@ -15,7 +15,7 @@ namespace PriceCompareApp.Test
         {
             //Arrange
             var itemCodes = new List<string>() { "0101228", "010155", "0101213", "050604" };
-            var sut = new StatusFrigoWebScraper();
+            var sut = new StatusFrigoWebScraper(null);
             
             //Act
             var result = await sut.RunScrapingAsync(itemCodes);

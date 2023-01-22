@@ -120,14 +120,21 @@ namespace PriceCompareApp.Core.Scrapers
 
                                 if (data != null)
                                 {
+                                    var priceText = !string.IsNullOrWhiteSpace(data.price_pdv)
+                                        ? data.price_pdv
+                                        : "-1";
+
+                                    double.TryParse(priceText.Replace(" ", ""), out var price);
+
+                                    if (price != -1)
+                                        price = price / 1.2; //računam cijenu bez PDV-a
+
                                     return new Item
                                     {
                                         Name = data.name,
                                         Code = data.cikkszam,
                                         Processed = true,
-                                        Price = !string.IsNullOrWhiteSpace(data.price_pdv)
-                                            ? data.price_pdv.Replace(" ", "")
-                                            : "-1"
+                                        Price = price.ToString("N")
                                     };
                                 }
                             }

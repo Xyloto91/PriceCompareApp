@@ -179,7 +179,7 @@ namespace PriceCompareApp.Core.Scrapers
                                         productInfo.Descendants("h2").FirstOrDefault()?.InnerText
                                     );
 
-                                    item.Price = productInfo
+                                    var priceText = productInfo
                                         .Descendants("p")
                                         .Where(
                                             p =>
@@ -188,6 +188,12 @@ namespace PriceCompareApp.Core.Scrapers
                                         )
                                         .FirstOrDefault()
                                         ?.Attributes["content"].Value;
+
+                                    double.TryParse(priceText.Replace(" ", ""), out var price);
+
+                                    price = price / 1.2; //računam cijenu bez PDV-a
+
+                                    item.Price = price.ToString("N");
                                 }
                             }
                         }

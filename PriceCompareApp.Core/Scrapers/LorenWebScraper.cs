@@ -205,7 +205,7 @@ namespace PriceCompareApp.Core.Scrapers
                                                         out price
                                                     );
 
-                                                    price = price / 1.2;
+                                                    price = price / 1.2; //računam cijenu bez PDV-a
 
                                                     item.Price = price.ToString("N");
                                                 }

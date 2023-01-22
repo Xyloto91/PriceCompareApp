@@ -162,7 +162,7 @@ namespace PriceCompareApp.Core.Scrapers
 
                             if (rightBlock != null)
                             {
-                                item.Price = rightBlock
+                                var priceText = rightBlock
                                     .Descendants("span")
                                     .Where(
                                         span =>
@@ -172,6 +172,12 @@ namespace PriceCompareApp.Core.Scrapers
                                     .FirstOrDefault()
                                     ?.InnerText.Replace("RSD", "")
                                     .Replace(" ", "");
+
+                                double.TryParse(priceText.Replace(" ", ""), out var price);
+
+                                price = price / 1.2; //računam cijenu bez PDV-a
+
+                                item.Price = price.ToString("N");
                             }
                         }
                     }

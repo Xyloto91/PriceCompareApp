@@ -15,7 +15,7 @@ namespace PriceCompareApp.Common
             get
             {
                 _connectionLossTimeout = "00:02:00";
-                if (!string.IsNullOrWhiteSpace(Helper.GetValueFromIniFile("ConnectionLossTimeout").ToString()))
+                if (!string.IsNullOrWhiteSpace(Helper.GetValueFromIniFile("ConnectionLossTimeout")?.ToString()))
                     _connectionLossTimeout = Helper.GetValueFromIniFile("ConnectionLossTimeout").ToString();
                 return _connectionLossTimeout;
             }
@@ -30,7 +30,7 @@ namespace PriceCompareApp.Common
         {
             get 
             {
-                if (!string.IsNullOrWhiteSpace(Helper.GetValueFromIniFile("VrecoolDefaultPath").ToString()))
+                if (!string.IsNullOrWhiteSpace(Helper.GetValueFromIniFile("VrecoolDefaultPath")?.ToString()))
                     _vrecoolDefaultPath = Helper.GetValueFromIniFile("VrecoolDefaultPath").ToString();
                 return _vrecoolDefaultPath;
             }
@@ -45,7 +45,7 @@ namespace PriceCompareApp.Common
         {
             get
             {
-                if (!string.IsNullOrWhiteSpace(Helper.GetValueFromIniFile("LorenDefaultPath").ToString()))
+                if (!string.IsNullOrWhiteSpace(Helper.GetValueFromIniFile("LorenDefaultPath")?.ToString()))
                     _lorenDefaultPath = Helper.GetValueFromIniFile("LorenDefaultPath").ToString();
                 return _lorenDefaultPath;
             }
@@ -60,7 +60,7 @@ namespace PriceCompareApp.Common
         {
             get
             {
-                if (!string.IsNullOrWhiteSpace(Helper.GetValueFromIniFile("DekomDefaultPath").ToString()))
+                if (!string.IsNullOrWhiteSpace(Helper.GetValueFromIniFile("DekomDefaultPath")?.ToString()))
                     _dekomDefaultPath = Helper.GetValueFromIniFile("DekomDefaultPath").ToString();
                 return _dekomDefaultPath;
             }
@@ -75,7 +75,7 @@ namespace PriceCompareApp.Common
         {
             get
             {
-                if (!string.IsNullOrWhiteSpace(Helper.GetValueFromIniFile("EltomDefaultPath").ToString()))
+                if (!string.IsNullOrWhiteSpace(Helper.GetValueFromIniFile("EltomDefaultPath")?.ToString()))
                     _eltomDefaultPath = Helper.GetValueFromIniFile("EltomDefaultPath").ToString();
                 return _eltomDefaultPath;
             }
@@ -90,7 +90,7 @@ namespace PriceCompareApp.Common
         {
             get
             {
-                if (!string.IsNullOrWhiteSpace(Helper.GetValueFromIniFile("ElkondDefaultPath").ToString()))
+                if (!string.IsNullOrWhiteSpace(Helper.GetValueFromIniFile("ElkondDefaultPath")?.ToString()))
                     _elkondDefaultPath = Helper.GetValueFromIniFile("ElkondDefaultPath").ToString();
                 return _elkondDefaultPath;
             }
@@ -105,7 +105,7 @@ namespace PriceCompareApp.Common
         {
             get
             {
-                if (!string.IsNullOrWhiteSpace(Helper.GetValueFromIniFile("StatusFrigoDefaultPath").ToString()))
+                if (!string.IsNullOrWhiteSpace(Helper.GetValueFromIniFile("StatusFrigoDefaultPath")?.ToString()))
                     _statusFrigoDefaultPath = Helper.GetValueFromIniFile("StatusFrigoDefaultPath").ToString();
                 return _statusFrigoDefaultPath;
             }
@@ -120,7 +120,7 @@ namespace PriceCompareApp.Common
         {
             get
             {
-                if (!string.IsNullOrWhiteSpace(Helper.GetValueFromIniFile("StelaxDefaultPath").ToString()))
+                if (!string.IsNullOrWhiteSpace(Helper.GetValueFromIniFile("StelaxDefaultPath")?.ToString()))
                     _stelaxDefaultPath = Helper.GetValueFromIniFile("StelaxDefaultPath").ToString();
                 return _stelaxDefaultPath;
             }
@@ -135,7 +135,7 @@ namespace PriceCompareApp.Common
         {
             get
             {
-                if (!string.IsNullOrWhiteSpace(Helper.GetValueFromIniFile("OutputDefaultDirectoryPath").ToString()))
+                if (!string.IsNullOrWhiteSpace(Helper.GetValueFromIniFile("OutputDefaultDirectoryPath")?.ToString()))
                     _outputDefaultDirectoryPath = Helper.GetValueFromIniFile("OutputDefaultDirectoryPath").ToString();
                 return _outputDefaultDirectoryPath;
             }
@@ -153,7 +153,7 @@ namespace PriceCompareApp.Common
                 //Excel file format
                 if (Helper.GetValueFromIniFile("FileFormat") != null)
                 {
-                    int.TryParse(Helper.GetValueFromIniFile("FileFormat").ToString(), out int enumVal);
+                    int.TryParse(Helper.GetValueFromIniFile("FileFormat")?.ToString(), out int enumVal);
                     return (Helper.ExcelFileFormat)enumVal;
                 }
 

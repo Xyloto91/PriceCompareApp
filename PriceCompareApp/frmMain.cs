@@ -218,7 +218,7 @@ namespace PriceCompareApp.UI
                 LogMessage("> Scraping operation started");
 
                 var scrapedDataByWebSite = new Dictionary<WebSite, List<Item>>();
-                var webScraper = WebScraper.InitializeWebScraper(LogMessage);
+                var webScraperService = WebScraperService.Initialize(LogMessage);
 
                 if (VrecoolChecked)
                 {
@@ -226,7 +226,7 @@ namespace PriceCompareApp.UI
 
                     if (vrecoolItemCodes?.Count > 0)
                     {
-                        vrecoolItemData = await webScraper.Execute(
+                        vrecoolItemData = await webScraperService.Execute(
                             WebSite.Vrecool,
                             vrecoolItemCodes
                         );
@@ -243,7 +243,7 @@ namespace PriceCompareApp.UI
 
                     if (lorenItemCodes?.Count > 0)
                     {
-                        lorenItemData = await webScraper.Execute(WebSite.Loren, lorenItemCodes);
+                        lorenItemData = await webScraperService.Execute(WebSite.Loren, lorenItemCodes);
                         scrapedDataByWebSite.Add(WebSite.Loren, lorenItemData);
 
                         if (DekomChecked)
@@ -257,7 +257,7 @@ namespace PriceCompareApp.UI
 
                     if (dekomItemCodes?.Count > 0)
                     {
-                        dekomItemData = await webScraper.Execute(WebSite.Dekom, dekomItemCodes);
+                        dekomItemData = await webScraperService.Execute(WebSite.Dekom, dekomItemCodes);
                         scrapedDataByWebSite.Add(WebSite.Dekom, dekomItemData);
 
                         if (ElkondChecked)
@@ -271,7 +271,7 @@ namespace PriceCompareApp.UI
 
                     if (elkondItemCodes?.Count > 0)
                     {
-                        elkondItemData = await webScraper.Execute(WebSite.Elkond, elkondItemCodes);
+                        elkondItemData = await webScraperService.Execute(WebSite.Elkond, elkondItemCodes);
                         scrapedDataByWebSite.Add(WebSite.Elkond, elkondItemData);
 
                         if (EltomChecked)
@@ -285,7 +285,7 @@ namespace PriceCompareApp.UI
 
                     if (eltomItemCodes?.Count > 0)
                     {
-                        eltomItemData = await webScraper.Execute(WebSite.Eltom, eltomItemCodes);
+                        eltomItemData = await webScraperService.Execute(WebSite.Eltom, eltomItemCodes);
                         scrapedDataByWebSite.Add(WebSite.Eltom, eltomItemData);
 
                         if (StatusFrigoChecked)
@@ -299,7 +299,7 @@ namespace PriceCompareApp.UI
 
                     if (statusFrigoItemCodes?.Count > 0)
                     {
-                        statusFrigoItemData = await webScraper.Execute(
+                        statusFrigoItemData = await webScraperService.Execute(
                             WebSite.StatusFrigo,
                             statusFrigoItemCodes
                         );

@@ -11,18 +11,18 @@ using static PriceCompareApp.Model.WebScraperBase;
 
 namespace PriceCompareApp.Core
 {
-    public class WebScraper
+    public class WebScraperService
     {
         private readonly WebScraperFactory _webScraperFactory;
         private readonly Action<string> _logger;
 
-        private WebScraper(Action<string> logger)
+        private WebScraperService(Action<string> logger)
         {
             _webScraperFactory = new WebScraperFactory();
             _logger = logger;
         }
 
-        public static WebScraper InitializeWebScraper(Action<string> logger) => new WebScraper(logger);
+        public static WebScraperService Initialize(Action<string> logger) => new WebScraperService(logger);
 
         public async Task<List<Item>> Execute(WebSite webSite, List<string> itemCodes) =>
             await _webScraperFactory.Create(webSite, _logger).RunScrapingAsync(itemCodes);

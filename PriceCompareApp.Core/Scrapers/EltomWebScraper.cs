@@ -83,7 +83,10 @@ namespace PriceCompareApp.Core.Scrapers
                 }
             }
 
-            return itemsConcurrentBag.ToList();
+            //sort data by order from input list
+            return itemsConcurrentBag
+                .OrderBy(x => itemCodes.IndexOf(x.Code))
+                .ToList();
         }
 
         private async Task<Item> GetItemDataAsync(string itemCode)

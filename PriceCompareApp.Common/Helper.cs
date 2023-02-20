@@ -218,7 +218,7 @@ namespace PriceCompareApp.Common
                                         {
                                             Code = dt.Rows[i][0].ToString().Trim(),
                                             Name = dt.Rows[i][1].ToString().Trim(),
-                                            Price = dt.Rows[i][4].ToString().Trim()
+                                            Price = dt.Rows[i][4].ToString().Trim().Replace(".", ",").Replace(" ", ".")
                                         }
                                     );
                                 else

@@ -165,9 +165,10 @@ namespace PriceCompareApp.Common
                     ExcelDataTableConfiguration excelConfig = new ExcelDataTableConfiguration { UseHeaderRow = false };
 
                     using (DataSet ds = excelDataReader.AsDataSet(new ExcelDataSetConfiguration { ConfigureDataTable = (_) => excelConfig }))
-                    using (System.Data.DataTable dt = ds.Tables[0])
+                    using (DataTable dt = ds.Tables[0])
                     {
                         bool foundItemCodes = false;
+                        int unknownIdCnt = 0;
                         for (int i = 0; i < dt.Rows.Count; i++)
                         {
                             if (i != 0 && dt.Rows[i - 1][0].ToString().Trim().ToUpper() == "ŠIFRA")
@@ -176,7 +177,12 @@ namespace PriceCompareApp.Common
                             if (foundItemCodes)
                             {
                                 if (!string.IsNullOrEmpty(dt.Rows[i][0].ToString().Trim()))
-                                    itemCodes.Add(dt.Rows[i][0].ToString().Trim());
+                                {
+                                    var code = dt.Rows[i][0].ToString().Trim();
+                                    if(code.ToLower().StartsWith("xxx")) //if code starts with xxx - unknown code append id number
+                                        code = $"{code}{++unknownIdCnt}";
+                                    itemCodes.Add(code);
+                                }
                                 else
                                     foundItemCodes = false;
                             }

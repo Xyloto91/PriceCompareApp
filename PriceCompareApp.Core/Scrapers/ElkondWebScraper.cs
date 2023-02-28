@@ -148,10 +148,10 @@ namespace PriceCompareApp.Core.Scrapers
                                 ex,
                                 $"Exception occured on deserialization elkond data for item code: {itemCode}"
                             );
-                            return null;
+                            return new Item { Code = itemCode };
                         }
                     }
-                    return null;
+                    return new Item { Code = itemCode };
                 }
                 else
                 {

@@ -192,7 +192,7 @@ namespace PriceCompareApp.Core.Scrapers
                                         .FirstOrDefault()
                                         ?.Attributes["content"].Value;
 
-                                    double.TryParse(priceText.Replace(" ", ""), out var price);
+                                    double.TryParse(priceText.Replace(" ", "").Replace(",", "").Replace(".", ","), out var price);
 
                                     price = price / 1.2; //računam cijenu bez PDV-a
 

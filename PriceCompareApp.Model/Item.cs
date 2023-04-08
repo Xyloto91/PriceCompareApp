@@ -17,5 +17,11 @@ namespace PriceCompareApp.Model
         public bool Processed { get; set; }
 
         public bool HasData => !string.IsNullOrEmpty(Name);
+
+        public override string ToString()
+        {
+            return $"Code: {Code}, Name: {Name}, Price: {Price}, HasData: {HasData}";
+        }
+
     }
 }

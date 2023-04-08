@@ -116,7 +116,7 @@ namespace PriceCompareApp.Core.Scrapers
                             )
                             {
                                 var data = elkondAutoSearchData.products.items
-                                    .Where(p => decimal.Parse(p.relevance) > 0)
+                                    .Where(p => decimal.Parse(p.relevance) > 0 && p.cikkszam == itemCode)
                                     .ToList()
                                     .OrderBy(p => decimal.Parse(p.relevance))
                                     .FirstOrDefault();
@@ -131,6 +131,9 @@ namespace PriceCompareApp.Core.Scrapers
 
                                     if (price != -1)
                                         price = price / 1.2; //računam cijenu bez PDV-a
+
+                                    if (data.status != "1")
+                                        price = 0;
 
                                     return new Item
                                     {

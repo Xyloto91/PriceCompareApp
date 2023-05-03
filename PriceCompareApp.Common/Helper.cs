@@ -358,7 +358,7 @@ namespace PriceCompareApp.Common
             {
                 if (item.Price == "NA UPIT")
                 {
-                    row.CreateCell(3).SetCellValue(item.Price);
+                    row.CreateCell(column).SetCellValue(item.Price);
                 }
                 else
                 {
@@ -368,7 +368,7 @@ namespace PriceCompareApp.Common
             }
             else
             {
-                row.CreateCell(3).SetCellValue("");
+                row.CreateCell(column).SetCellValue("");
             }
         }
     }
